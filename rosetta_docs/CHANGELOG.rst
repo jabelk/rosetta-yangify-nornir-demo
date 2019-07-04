@@ -1,7 +1,0 @@
-CHANGELOG
-=========
-
-develop
--------
-
-- first version
