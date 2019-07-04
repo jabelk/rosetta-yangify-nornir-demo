@@ -1,0 +1,27 @@
+---
+# https://github.com/nornir-automation/nornir-tools/blob/master/tests/virtual/inventory/hosts.yaml
+csr1kv:
+  hostname: 127.0.0.1
+  port: 12204
+  data:
+    openconfig_data: "placeholder"
+  groups:
+    - ios
+
+
+# eos_device:
+#   hostname: 127.0.0.1
+#   port: 2222
+#   groups:
+#     - eos
+# napalm.base.exceptions.ConnectionException: Socket error during eAPI connection: [SSL: UNKNOWN_PROTOCOL] unknown protocol (_ssl.c:1056)
+
+# junos_device:
+#   hostname: 127.0.0.1
+#   nornir_nos: junos
+#   port: 12203
+#   groups:
+# #     - junos
+# jnpr.junos.exception.ConnectAuthError: ConnectAuthError(127.0.0.1)
+#     raise AuthenticationError(repr(saved_exception))
+# ncclient.transport.errors.AuthenticationError: AuthenticationException('Authentication failed.')
