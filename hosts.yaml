@@ -4,7 +4,7 @@ csr1kv:
   hostname: 127.0.0.1
   port: 12204
   data:
-    openconfig_data: "placeholder"
+    candidate_config_model: "placeholder"
   groups:
     - ios
 
