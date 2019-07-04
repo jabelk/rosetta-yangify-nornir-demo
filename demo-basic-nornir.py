@@ -88,7 +88,7 @@ def backup(task, path):
 
 def parse_config_to_json(task, path):
     ntc_rosetta_json, ntc_rosetta_yaml = rosetta_parse_native_to_data_model(task)
-    ntc_rosetta_json = json.dumps(ntc_rosetta_json)
+    ntc_rosetta_json = json.dumps(ntc_rosetta_json, indent=4)
     task.run(
         task=write_file,
         filename=f"{path}/{task.host}_rosetta.json",
@@ -108,7 +108,7 @@ def main() -> None:
     result = ios_devices.run(task=backup, path="config/backed_up_from_device")
     print_result(result, severity_level=logging.INFO)
 
-    result = ios_devices.run(task=parse_config_to_json, path="config/backed_up_from_device")
+    result = ios_devices.run(task=parse_config_to_json, path="config/rendered_from_yaml")
     print_result(result, severity_level=logging.INFO)
 
 
