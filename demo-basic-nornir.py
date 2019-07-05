@@ -18,6 +18,7 @@ from nornir.plugins.tasks.networking import napalm_get
 # rest api
 import json
 import yaml
+from copy import deepcopy
 import requests
 from requests.exceptions import HTTPError
 from requests.auth import HTTPBasicAuth
@@ -87,11 +88,23 @@ def rosetta_parse_native_to_data_model(task):
     ios_driver = ios()
     ntc_rosetta_data = ios_driver.parse(native={"dev_conf": task.host["native_config"]})
     ntc_rosetta_dict = ntc_rosetta_data.raw_value()
-    print(ntc_rosetta_data.raw_value())
-    print(type(ntc_rosetta_data.raw_value()))
     task.host["rosetta_parsed_config"] = ntc_rosetta_data.raw_value()
-    print("tasky")
-    print(task.host["rosetta_parsed_config"])
+
+def rosetta_merge_new_config_from_data_model(task):
+    ios = get_driver("ios", "openconfig")
+    ios_processor = ios()
+    new_vlans = {'openconfig-network-instance:network-instances': 
+    {'network-instance': [{'name': 'default', 'config': {'name': 'default'}, 
+    'vlans': {'vlan': [{'vlan-id': 10, 'config': {'vlan-id': 10, 'name': 'prod', 'status': 'ACTIVE'}}, 
+    {'vlan-id': 20, 'config': {'vlan-id': 20, 'name': 'dev', 'status': 'SUSPENDED'}}]}}]}}
+    print("New Vlans Data Model")
+    print(json.dumps(new_vlans, indent=4))
+    running_config = task.host["rosetta_parsed_config"]
+    print("running config is ")
+    print(running_config)
+    merged_config = ios_processor.merge(candidate=new_vlans, running=running_config)
+    # print("merged config is ")
+    # print(merged_config)
 
 def backup(task, path):
     r = task.run(
@@ -158,19 +171,18 @@ def main() -> None:
     # rosetta_parsed_config
     result = ios_devices.run(task=parsed_config_from_disk)
     print_result(result, severity_level=logging.INFO)
-    # print("multie result")
-    # print(dir(ios_devices))
-    # print_result(parsed_config)
 
-    # config/config_rendered_from_data
     inventory_dict = ios_devices.inventory.hosts["csr1kv"]["rosetta_parsed_config"]
     print(ios_devices.inventory.hosts["csr1kv"]["rosetta_parsed_config"])
-    # inventory_dict["csr1kv"]["data"]["native_config"] = config_from_disk
-    # dict_keys(['rosetta_parsed_config', 'native_config'])
+    # Build New Inventory File with Config / Parsed Config in memory Inventory
     current_inventory = load_inventory()
     current_inventory["csr1kv"]["data"]["rosetta_parsed_config"] = ntc_rosetta_dict
     current_inventory["csr1kv"]["data"]["native_config"] = native_config
     result = ios_devices.run(task=create_yaml_file, python_object_input=current_inventory)
+    print_result(result, severity_level=logging.INFO)
+
+    # merge new config into running parsed
+    result = ios_devices.run(task=rosetta_merge_new_config_from_data_model)
     print_result(result, severity_level=logging.INFO)
     # result = ios_devices.run(task=get_restconf_all_interfaces, model="openconfig")
     # print_result(result["csr1kv"], severity_level=logging.INFO)
