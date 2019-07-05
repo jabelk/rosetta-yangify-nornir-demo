@@ -4,7 +4,8 @@ csr1kv:
   hostname: 127.0.0.1
   port: 12204
   data:
-    candidate_config_model: "placeholder"
+    rosetta_parsed_config: ""
+    native_config: ""
   groups:
     - ios
 

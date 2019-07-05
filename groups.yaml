@@ -2,6 +2,9 @@
 devices:
   username: vagrant
   password: vagrant
+  data:
+    rosetta_parsed_config: ""
+    native_config: ""
 
 ios:
   platform: ios
@@ -18,3 +21,6 @@ junos:
   platform: junos
   username: root
   password: Junos
+  data:
+    rosetta_parsed_config: ""
+    native_config: ""

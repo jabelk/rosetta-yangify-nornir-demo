@@ -1,0 +1,8 @@
+csr1kv:
+  data:
+    native_config: ''
+    rosetta_parsed_config: ''
+  groups:
+  - ios
+  hostname: 127.0.0.1
+  port: 12204
