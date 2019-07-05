@@ -56,34 +56,42 @@ def get_restconf_all_interfaces(task, model="native", port="2225"):
     response = requests.get(url, headers=headers, auth=auth, verify=False)
     return response.text
 
-def temp(task):
-    parsed_vlans = ios_driver.parse(
-    native={"dev_conf": config},
-    validate=False,
-    include=[
-         "/openconfig-network-instance:network-instances/network-instance/name",
-        "/openconfig-network-instance:network-instances/network-instance/config",
-        "/openconfig-network-instance:network-instances/network-instance/vlans",
-        ]
-    )
-    print(json.dumps(parsed_vlans.raw_value(), indent=4))
+# def temp(task):
+#     ios = get_driver("ios", "openconfig")
+#     ios_driver = ios()
+#     parsed_vlans = ios_driver.parse(
+#     native={"dev_conf": native_config_from_disk(task)},
+#     validate=False,
+#     include=[
+#          "/openconfig-network-instance:network-instances/network-instance/name",
+#         "/openconfig-network-instance:network-instances/network-instance/config",
+#         "/openconfig-network-instance:network-instances/network-instance/vlans",
+#         ]
+#     )
+#     print(json.dumps(parsed_vlans.raw_value(), indent=4))
 
 def native_config_from_disk(task):
     with open("config/backed_up_from_device/{}_napalm_backup.conf".format(task.host.name), "r") as f:
         native_config = f.read()
-    return native_config
+    # Save the compiled configuration into a host variable
+    task.host["native_config"] = native_config
+    # ios_devices.inventory.hosts.get("csr1kv").data["native_config"] = config_from_disk
 
 def parsed_config_from_disk(task):
     with open("config/data_models_from_parsing/{}_rosetta.json".format(task.host.name), "r") as f:
         ntc_rosetta_json = f.read()
-    return ntc_rosetta_json
+    task.host["rosetta_parsed_config"] = ntc_rosetta_json
 
 def rosetta_parse_native_to_data_model(task):
     ios = get_driver("ios", "openconfig")
     ios_driver = ios()
-    ntc_rosetta_data = ios_driver.parse(native={"dev_conf": native_config_from_disk(task)})
+    ntc_rosetta_data = ios_driver.parse(native={"dev_conf": task.host["native_config"]})
     ntc_rosetta_dict = ntc_rosetta_data.raw_value()
-    return ntc_rosetta_dict
+    print(ntc_rosetta_data.raw_value())
+    print(type(ntc_rosetta_data.raw_value()))
+    task.host["rosetta_parsed_config"] = ntc_rosetta_data.raw_value()
+    print("tasky")
+    print(task.host["rosetta_parsed_config"])
 
 def backup(task, path):
     r = task.run(
@@ -97,18 +105,16 @@ def backup(task, path):
         content=r.result["config"]["running"],
     )
 
-def parse_config_to_json(task, path):
-    ntc_rosetta_dict = rosetta_parse_native_to_data_model(task)
-    create_json_file(task, python_object_input=ntc_rosetta_dict, filename=f"{path}/{task.host}_rosetta.json")
-    create_yaml_file(task, python_object_input=ntc_rosetta_dict, filename=f"{path}/{task.host}_rosetta.yml")
-
 def load_inventory():
     with open("hosts.yaml", "r") as f:
         inventory_dict = yaml.safe_load(f.read())
     return inventory_dict
 
 def create_yaml_file(task, python_object_input, filename="hosts_new.yaml"):
+    print(python_object_input)
     yaml_file = yaml.dump(python_object_input, default_flow_style=False)
+    print("yaml file\n\n")
+    print(yaml_file)
     task.run(
         task=write_file,
         filename=filename,
@@ -127,34 +133,48 @@ def main() -> None:
     nornir = InitNornir()
     # Get Openconfig Interface Data from CSR1000v from Restconf
     ios_devices = nornir.filter(F(platform="ios"))
+    # result = ios_devices.run(task=temp)
+    # print_result(result, severity_level=logging.INFO)
+
     # back up to disk using napalm getter 
-    # result = ios_devices.run(task=backup, path="config/backed_up_from_device")
+    result = ios_devices.run(task=backup, path="config/backed_up_from_device")
     # print_result(result, severity_level=logging.INFO)
-    # # read backup from disk - assign to nornir inventory host attribute
-    # config_from_disk = ios_devices.run(task=native_config_from_disk)
-    # ios_devices.inventory.hosts.get("csr1kv").data["native_config"] = config_from_disk
-    # # parse config into data model using rosetta / yangify, put yaml / json to file for reference
-    # result = ios_devices.run(task=parse_config_to_json, path="config/data_models_from_parsing")
-    # print_result(result, severity_level=logging.INFO)
-    # # rosetta_parsed_config
-    # parsed_config = ios_devices.run(task=parsed_config_from_disk)
+    
+    # read backup from disk - assign to nornir inventory host attribute
+    ios_devices.run(task=native_config_from_disk)
+    # ios_devices.inventory.hosts.get("csr1kv").data["native_config"] = config_from_disk["csr1kv"].result
+
+    # parse config into data model using rosetta / yangify, put yaml / json to file for reference
+    result = ios_devices.run(task=rosetta_parse_native_to_data_model)
+    print_result(result, severity_level=logging.INFO)
+
+    print("rosetta dict\n\n")
+    print(ios_devices.inventory.hosts["csr1kv"]["rosetta_parsed_config"])
+    path = "config/data_models_from_parsing"
+    ntc_rosetta_dict = ios_devices.inventory.hosts["csr1kv"]["rosetta_parsed_config"]
+    native_config = ios_devices.inventory.hosts["csr1kv"]["native_config"]
+    ios_devices.run(task=create_json_file, python_object_input=ntc_rosetta_dict, filename=f"{path}/csr1kv_rosetta.json")
+    ios_devices.run(task=create_yaml_file, python_object_input=ntc_rosetta_dict, filename=f"{path}/csr1kv_rosetta.yml")
+    # rosetta_parsed_config
+    result = ios_devices.run(task=parsed_config_from_disk)
+    print_result(result, severity_level=logging.INFO)
+    # print("multie result")
+    # print(dir(ios_devices))
+    # print_result(parsed_config)
+
     # config/config_rendered_from_data
-    inventory_dict = load_inventory()
-    inventory_dict["csr1kv"]["data"]["rosetta_parsed_config"] = ""#parsed_config
-    inventory_dict["csr1kv"]["data"]["native_config"] = ""#config_from_disk
+    inventory_dict = ios_devices.inventory.hosts["csr1kv"]["rosetta_parsed_config"]
+    print(ios_devices.inventory.hosts["csr1kv"]["rosetta_parsed_config"])
+    # inventory_dict["csr1kv"]["data"]["native_config"] = config_from_disk
     # dict_keys(['rosetta_parsed_config', 'native_config'])
-    result = ios_devices.run(task=create_yaml_file, python_object_input=inventory_dict)
-
-    result = ios_devices.run(task=native_config_from_disk)
-    print_result(result)
-
+    current_inventory = load_inventory()
+    current_inventory["csr1kv"]["data"]["rosetta_parsed_config"] = ntc_rosetta_dict
+    current_inventory["csr1kv"]["data"]["native_config"] = native_config
+    result = ios_devices.run(task=create_yaml_file, python_object_input=current_inventory)
+    print_result(result, severity_level=logging.INFO)
     # result = ios_devices.run(task=get_restconf_all_interfaces, model="openconfig")
     # print_result(result["csr1kv"], severity_level=logging.INFO)
 
-    # # Get Openconfig Interface Data parsed from native CLI on disk
-
-    # result = ios_devices.run(task=parse_config)
-    # print_result(result, severity_level=logging.INFO)
 
 
 if __name__ == "__main__":
