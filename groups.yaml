@@ -19,28 +19,11 @@ junos:
   username: vagrant
   password: NTC123
 # add password to vagrant user which had public key login
-# root@vagrant-junos-test> configure
-# Entering configuration mode
+# cli
+# configure
+# edit system login
+# edit user vagrant
+# set authentication plain-text-password
+# NTC123
+# commit
 
-# [edit]
-# root@vagrant-junos-test# edit system login
-
-# [edit system login]
-# root@vagrant-junos-test# edit user vagrant
-
-# [edit system login user vagrant]
-# root@vagrant-junos-test# set authentication plain-text-password
-# New password:
-# error: require change of case, digits or punctuation
-
-# [edit system login user vagrant]
-# root@vagrant-junos-test# set authentication plain-text-password
-# New password:
-# Retype new password:
-
-# [edit system login user vagrant]
-# root@vagrant-junos-test# commit
-# commit complete
-
-# [edit system login user vagrant]
-# root@vagrant-junos-test#

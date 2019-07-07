@@ -80,7 +80,7 @@ def rosetta_parse_native_to_data_model(task):
     ntc_rosetta_dict = ntc_rosetta_data.raw_value()
     task.host["rosetta_parsed_config"] = ntc_rosetta_data.raw_value()
 
-def rosetta_merge_new_config_from_data_model(task):
+def rosetta_merge_new_config_from_data_model(task, path="config/config_rendered_from_data"):
     rosetta_device_driver = rosetta_get_driver(task.host.platform)
     new_vlans = {'openconfig-network-instance:network-instances': 
     {'network-instance': [{'name': 'default', 'config': {'name': 'default'}, 
@@ -95,12 +95,11 @@ def rosetta_merge_new_config_from_data_model(task):
     print("Proposed New Native config from Rosetta is ")
     print(merged_config)
     # syntax errors for merge config need to be fixed 
-    # task.run(
-    #     name="Loading Rosetta Generated Configuration on the device",
-    #     task=napalm_configure,
-    #     replace=False,
-    #     configuration=merged_config,
-    # )
+    task.run(
+            task=write_file,
+            filename=f"{path}/{task.host}_rosetta_proposed_merge_config.conf",
+            content=merged_config,
+        )
 
 def backup(task, path):
     if task.host.platform == "ios" or "eos":

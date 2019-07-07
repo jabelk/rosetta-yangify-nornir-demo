@@ -1,8 +1,8 @@
 csr1kv:
   data:
     backup_command: show run all
-    native_config: "Building configuration...\n\nCurrent configuration : 3821 bytes\n\
-      !\n! Last configuration change at 17:08:01 UTC Sat Jul 6 2019\n!\nversion 16.6\n\
+    native_config: "Building configuration...\n\nCurrent configuration : 4266 bytes\n\
+      !\n! Last configuration change at 15:36:17 UTC Sun Jul 7 2019\n!\nversion 16.6\n\
       service timestamps debug datetime msec\nservice timestamps log datetime msec\n\
       platform qfp utilization monitor load 80\nno platform punt-keepalive disable-kernel-core\n\
       platform console serial\n!\nhostname csr1kv\n!\nboot-start-marker\nboot-end-marker\n\
@@ -39,21 +39,27 @@ csr1kv:
       \ \n  65FDB13E 9283802E 6AA270D1 BA6203BA 256A3AAE A90DDDC8 D2CF5E37 2ED0A7AB\
       \ \n  B37512AB EA0D65AB EBD9CA7E 949E9AAC 3C98E5F9 11DAF113 B1108CB7 B1C4E15C\
       \ \n  F1CE1E2C 6AC11F02 D2E26288 5722CCC9 CB648CDF\n  \tquit\n!\n!\n!\n!\n!\n\
-      !\n!\n!\n!\nlicense udi pid CSR1000V sn 9WWNLO9YQ3B\ndiagnostic bootup level\
-      \ minimal\nspanning-tree extend system-id\n!\nnetconf-yang cisco-odm polling-enable\n\
-      netconf-yang\n!\nrestconf\n!\nusername vagrant privilege 15 password 0 vagrant\n\
-      !\nredundancy\n!\n!\n!\n!\n!\n!\n! \n!\n!\n!\n!\n!\n!\n!\n!\n!\n!\n!\n!\n! \n\
-      ! \n!\n!\ninterface GigabitEthernet1\n ip address dhcp\n negotiation auto\n\
-      \ no mop enabled\n no mop sysid\n!\ninterface GigabitEthernet2\n no ip address\n\
-      \ shutdown\n negotiation auto\n no mop enabled\n no mop sysid\n!\ninterface\
-      \ GigabitEthernet3\n no ip address\n shutdown\n negotiation auto\n no mop enabled\n\
-      \ no mop sysid\n!\n!\nvirtual-service csr_mgmt\n!\nip forward-protocol nd\n\
-      ip http server\nip http secure-server\nip http client source-interface GigabitEthernet1\n\
-      ip tftp source-interface GigabitEthernet1\n!\nip ssh pubkey-chain\n  username\
-      \ vagrant\n   key-hash ssh-rsa DD3BB82E850406E9ABFFA80AC0046ED6 \n!\n!\n!\n\
-      !\n!\ncontrol-plane\n!\n!\n!\n!\n!\n!\nline con 0\n stopbits 1\nline vty 0 4\n\
-      \ login local\n!\nwsma agent exec\n!\nwsma agent config\n!\nwsma agent filesys\n\
-      !\nwsma agent notify\n!\n!\nend"
+      !\n!\n!\n!\nlicense udi pid CSR1000V sn 969SGM9YVZR\ndiagnostic bootup level\
+      \ minimal\nspanning-tree extend system-id\n!\nnetconf-yang cisco-odm actions\
+      \ OSPF\nnetconf-yang cisco-odm actions IPRoute\nnetconf-yang cisco-odm actions\
+      \ Diffserv\nnetconf-yang cisco-odm actions BFDNeighbors\nnetconf-yang cisco-odm\
+      \ actions BridgeDomain\nnetconf-yang cisco-odm actions VirtualService\nnetconf-yang\
+      \ cisco-odm actions EthernetCFMStats\nnetconf-yang cisco-odm actions MPLSLDPNeighbors\n\
+      netconf-yang cisco-odm actions MPLSStaticBinding\nnetconf-yang cisco-odm actions\
+      \ MPLSForwardingTable\nnetconf-yang cisco-odm polling-enable\nnetconf-yang\n\
+      !\nrestconf\n!\nusername vagrant privilege 15 password 0 vagrant\n!\nredundancy\n\
+      !\n!\n!\n!\n!\n!\n! \n!\n!\n!\n!\n!\n!\n!\n!\n!\n!\n!\n!\n! \n! \n!\n!\ninterface\
+      \ GigabitEthernet1\n ip address dhcp\n negotiation auto\n no mop enabled\n no\
+      \ mop sysid\n!\ninterface GigabitEthernet2\n no ip address\n shutdown\n negotiation\
+      \ auto\n no mop enabled\n no mop sysid\n!\ninterface GigabitEthernet3\n no ip\
+      \ address\n shutdown\n negotiation auto\n no mop enabled\n no mop sysid\n!\n\
+      !\nvirtual-service csr_mgmt\n!\nip forward-protocol nd\nip http server\nip http\
+      \ secure-server\nip http client source-interface GigabitEthernet1\nip tftp source-interface\
+      \ GigabitEthernet1\n!\nip ssh pubkey-chain\n  username vagrant\n   key-hash\
+      \ ssh-rsa DD3BB82E850406E9ABFFA80AC0046ED6 \n!\n!\n!\n!\n!\ncontrol-plane\n\
+      !\n!\n!\n!\n!\n!\nline con 0\n stopbits 1\nline vty 0 4\n login local\n!\nwsma\
+      \ agent exec\n!\nwsma agent config\n!\nwsma agent filesys\n!\nwsma agent notify\n\
+      !\n!\nend"
     rosetta_parsed_config:
       openconfig-interfaces:interfaces:
         interface:
@@ -88,9 +94,9 @@ eos_device:
       !\n! boot system flash:/vEOS-lab.swi\n!\nevent-handler dhclient\n   trigger\
       \ on-boot\n   action bash sudo /mnt/flash/initialize_ma1.sh\n!\ntransceiver\
       \ qsfp default-mode 4x10G\n!\nspanning-tree mode mstp\n!\naaa authorization\
-      \ exec default local\n!\naaa root secret sha512 $6$c4Afx9gi3Vomn3MJ$oTyx9V.4j9BKouR2szQA7IA7qLRMKoqOMeIr0RFjx0TLmESI5pmIb2MgBC//OymzhKkTxtOa4Htdg7YdTTAqc.\n\
-      !\nusername admin privilege 15 role network-admin secret sha512 $6$d0ipetfKSIlGjMfw$CfYqGlcN5cwi1GJgPGyrTEzjA8tPC8XrDMjf8WBwc8SmyaQM25x5YCrCvPz8OOxqwVS4zAMUs6ICiKcVk3OBc0\n\
-      username vagrant privilege 15 role network-admin secret sha512 $6$WIAumVmhEeJeBvic$OBvvyHS.JUZF5Zvv6fRaZpPOUyCWGJykRHvnrssiTGTeCIt5zNwL2j9cda.OU.TAB3INTMeA2DUBOULu.O2Mr.\n\
+      \ exec default local\n!\naaa root secret sha512 $6$3vxJ7B6Fo7lcSFsm$rfP6vwLjsaCoMx7F.NgI0b84SdX.BMP6rvwmndb8wmn.GGqFnWj629e1GNeicMWeibGw/.NVF/Dk7mCb8sjFg.\n\
+      !\nusername admin privilege 15 role network-admin secret sha512 $6$Vhmfz1GKYna/OO.w$AeuWQQLJ7MJN6/lXlNyGL/HEsl.TqpPtgyuaiU98Ra2uT7988TFX80UOA0E396g2cP9tNm257DyYNRCHGAU120\n\
+      username vagrant privilege 15 role network-admin secret sha512 $6$Bk2RjaWebGhhb29x$a7qMCmgMhLpaI.0PG8dvy0XrbC6BZfs68SUaPT9uSuoDGsoyKjEbqndhGJJp7nYZeVKlVd1TUU1m0wuYGxvlP0\n\
       !\ninterface Ethernet1\n!\ninterface Ethernet2\n!\ninterface Management1\n \
       \  ip address 10.0.2.15/24\n!\nno ip routing\n!\nmanagement api http-commands\n\
       \   no shutdown\n!\nend\n"
@@ -117,16 +123,16 @@ junos_device:
   data:
     backup_command: show configuration | display xml
     native_config: "\n<rpc-reply xmlns:junos=\"http://xml.juniper.net/junos/12.1X47/junos\"\
-      >\n    <configuration junos:commit-seconds=\"1562456610\" junos:commit-localtime=\"\
-      2019-07-06 23:43:30 UTC\" junos:commit-user=\"root\">\n            <version>12.1X47-D15.4</version>\n\
+      >\n    <configuration junos:commit-seconds=\"1562515865\" junos:commit-localtime=\"\
+      2019-07-07 16:11:05 UTC\" junos:commit-user=\"root\">\n            <version>12.1X47-D15.4</version>\n\
       \            <system>\n                <host-name>vagrant-junos-test</host-name>\n\
       \                <root-authentication>\n                    <encrypted-password>$1$nq.N1UsY$JxA/ESAj3KuXseXE597gg0</encrypted-password>\n\
-      \                    <ssh-rsa>\n                        <name>ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDGZWqmmo8PDImxp4hJNa0y+abAmeKwQqm2yE0UuWyMFpj+SrCmJckug48wQOTwz9rAEKI3KYzDimMoQpFdrr32PQxrIwQ2hK3kczYlz+b+WQTlLZQ9lrkm3kVjuUuygtqo0qmqkxucTQ20UpReNoq6VBM0O43KqmWm3yaflzoSrjZvHZA7ECk/YvbMidCMvOfbCXOZEAiipgI8PfzdguJbpOLNJW5kyDxF7N6boRqgSig55Y4PTiQ9lec3JBUd9y/TsNrQndd/vd/qipDj3oL7iq3vulTeORFgFsOUrV6dZcYrefDrAQh5nejJQW7QNqrkPZEawBW648VnkB3Q7ijR\
+      \                    <ssh-rsa>\n                        <name>ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCzeQSsL2iEEXNztA9bWMiKjd3t+IL4MW2I9P+KtIw62/xBRlEai8TO6sZS0196hB3LQcycnZ1UaO+Gi8H9Fu2HJPd2kSjX3AX13SUlHJSnp0YNh3+3ZsijsSIKHEJpihnrcfjU1N9nDiSeHECWvDTgI6Dw/M+vyy/TxqaolUxFJGuHQ/KGyJEF86x9TsWqln4YlSMQJNMHnt3FZJ1dAdycGvPYkhFfsJeeW4s/O5dddGU0iQGMU9YAZZjYCDJApnYHB5Clp+hQNo88bnWnlWVDsGHaPPK4YXtRK57XolAzJ+50vhRYU2OoQYaDGFib1WQQDjqw7B8PHnsGzQSV2zYn\
       \ vagrant</name>\n                    </ssh-rsa>\n                </root-authentication>\n\
       \                <login>\n                    <user>\n                     \
       \   <name>vagrant</name>\n                        <uid>2000</uid>\n        \
       \                <class>super-user</class>\n                        <authentication>\n\
-      \                            <encrypted-password>$1$xr3BCSCQ$FOLQ4pPyBXtzI5BWMcQ0A0</encrypted-password>\n\
+      \                            <encrypted-password>$1$WX41JNJz$r/mdjOSysnXgyQe9B6kEs1</encrypted-password>\n\
       \                            <ssh-rsa>\n                                <name>ssh-rsa\
       \ AAAAB3NzaC1yc2EAAAABIwAAAQEA6NF8iallvQVp22WDkTkyrtvp9eWW6A8YVr+kz4TjGYe7gHzIw+niNltGEFHzD8+v1I2YJ6oXevct1YeS0o9HZyN1Q9qgCgzUFtdOKLv6IedplqoPkcmF0aYet2PkEDo3MlTBckFXPITAMzF8dJSIFo9D8HfdOV0IAdx4O7PtixWKn5y2hMNG0zQPyUecp4pzC6kivAIhyfHilFR61RGL+GPXQ2MWZWFYbAGjyiYJnAmCP3NOTd0jMZEnDkbUvxhMmBYSdETk1rRgm+R4LOzFUGaHqHDLKLX+FIPKcF96hrucXzcWyLbIbEgE98OHlnVYCzRdK8jlqm8tehUc9c9WhQ==\
       \ vagrant insecure public key</name>\n                            </ssh-rsa>\n\
