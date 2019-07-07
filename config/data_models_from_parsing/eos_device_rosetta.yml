@@ -1,0 +1,21 @@
+openconfig-interfaces:interfaces:
+  interface:
+  - config:
+      enabled: true
+      name: Ethernet1
+      type: iana-if-type:ethernetCsmacd
+    name: Ethernet1
+  - config:
+      enabled: true
+      name: Ethernet2
+      type: iana-if-type:ethernetCsmacd
+    name: Ethernet2
+  - config:
+      enabled: true
+      name: Management1
+    name: Management1
+openconfig-network-instance:network-instances:
+  network-instance:
+  - config:
+      name: default
+    name: default

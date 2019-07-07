@@ -10,19 +10,25 @@ csr1kv:
     - ios
 
 
-# eos_device:
-#   hostname: 127.0.0.1
-#   port: 2222
-#   groups:
-#     - eos
+eos_device:
+  hostname: 127.0.0.1
+  port: 8443
+  data:
+    rosetta_parsed_config: ""
+    native_config: ""
+  groups:
+    - eos
 # napalm.base.exceptions.ConnectionException: Socket error during eAPI connection: [SSL: UNKNOWN_PROTOCOL] unknown protocol (_ssl.c:1056)
+# use vagrant port eos for eapi (443 mapping)
 
-# junos_device:
-#   hostname: 127.0.0.1
-#   nornir_nos: junos
-#   port: 12203
-#   groups:
-# #     - junos
+junos_device:
+  hostname: 127.0.0.1
+  port: 12203
+  data:
+    rosetta_parsed_config: ""
+    native_config: ""
+  groups:
+    - junos
 # jnpr.junos.exception.ConnectAuthError: ConnectAuthError(127.0.0.1)
 #     raise AuthenticationError(repr(saved_exception))
 # ncclient.transport.errors.AuthenticationError: AuthenticationException('Authentication failed.')

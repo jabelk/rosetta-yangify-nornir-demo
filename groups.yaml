@@ -2,9 +2,6 @@
 devices:
   username: vagrant
   password: vagrant
-  data:
-    rosetta_parsed_config: ""
-    native_config: ""
 
 ios:
   platform: ios
@@ -19,8 +16,31 @@ eos:
 
 junos:
   platform: junos
-  username: root
-  password: Junos
-  data:
-    rosetta_parsed_config: ""
-    native_config: ""
+  username: vagrant
+  password: NTC123
+# add password to vagrant user which had public key login
+# root@vagrant-junos-test> configure
+# Entering configuration mode
+
+# [edit]
+# root@vagrant-junos-test# edit system login
+
+# [edit system login]
+# root@vagrant-junos-test# edit user vagrant
+
+# [edit system login user vagrant]
+# root@vagrant-junos-test# set authentication plain-text-password
+# New password:
+# error: require change of case, digits or punctuation
+
+# [edit system login user vagrant]
+# root@vagrant-junos-test# set authentication plain-text-password
+# New password:
+# Retype new password:
+
+# [edit system login user vagrant]
+# root@vagrant-junos-test# commit
+# commit complete
+
+# [edit system login user vagrant]
+# root@vagrant-junos-test#

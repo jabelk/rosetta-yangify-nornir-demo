@@ -1,0 +1,39 @@
+{
+    "openconfig-interfaces:interfaces": {
+        "interface": [
+            {
+                "name": "Ethernet1",
+                "config": {
+                    "name": "Ethernet1",
+                    "type": "iana-if-type:ethernetCsmacd",
+                    "enabled": true
+                }
+            },
+            {
+                "name": "Ethernet2",
+                "config": {
+                    "name": "Ethernet2",
+                    "type": "iana-if-type:ethernetCsmacd",
+                    "enabled": true
+                }
+            },
+            {
+                "name": "Management1",
+                "config": {
+                    "name": "Management1",
+                    "enabled": true
+                }
+            }
+        ]
+    },
+    "openconfig-network-instance:network-instances": {
+        "network-instance": [
+            {
+                "name": "default",
+                "config": {
+                    "name": "default"
+                }
+            }
+        ]
+    }
+}

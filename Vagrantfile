@@ -10,41 +10,55 @@ root@vagrant-junos-test% cli
 root@vagrant-junos-test> 
 """
 Vagrant.configure(2) do |config|
-  config.vbguest.auto_update = false
   config.vm.define "eos" do |eos|
-    # get a free account and download from arista https://eos.arista.com/openconfig-4-20-2-1f-release-notes/
+    eos.vbguest.auto_update = false
     eos.vm.box = "vEOS-lab-4.20.1F"
-    # Configure a forwarded port to access eAPI on vEOS
-    # https://username:password@localhost:8443/command-api
-    eos.vm.network "forwarded_port", guest: 443, host: 8443, id: 'https'
-    eos.vm.network :forwarded_port, guest: 443, host: 12443, id: 'https'
-    # Add additional NICs to the VM:
-    #   NIC1 (Management 1) - is created in the the basebox and vagrant always uses this via DHCP to communicate with the VM.
-    #   The default Vagrantfile template includes Ethernet1 and Ethernet2.  Add lines similar to those below to create
-    #     additional NICs which will be Ethernet 3-n                                
-    #   Using link-local addresses to satisfy the Vagrantfile config parser, only.  They will not be used by vEOS.
-    # Create Ethernet3
-    eos.vm.network 'private_network', virtualbox__intnet: true, ip: '169.254.1.11', auto_config: false
-    # Create Ethernet4
-    eos.vm.network 'private_network', virtualbox__intnet: true, ip: '169.254.1.11', auto_config: false
-    eos.vm.provider "virtualbox" do |v|
-      # Patch Ethernet1 to a particular internal network
-      v.customize ["modifyvm", :id, "--nic2", "intnet", "--intnet2", "vEOS-intnet1"]
-      # Patch Ethernet2 to a particular internal network
-      v.customize ["modifyvm", :id, "--nic3", "intnet", "--intnet3", "vEOS-intnet2"]
-    end
-    # The sample, below is preconfigured in the basebox
-    # Enable eAPI in the EOS config
-    # add vagrant user, thanks to Jere Julian
-    eos.vm.provision 'shell', inline: <<-SHELL
-      FastCli -p 15 -c "configure
-      username vagrant privilege 15 role network-admin secret vagrant
-      management api http-commands
-        no shutdown
-      end
-      copy running-config startup-config"
-    SHELL
+  # Add additional NICs to the VM:
+  #   NIC1 (Management 1) - is created in the the basebox and vagrant always uses this via DHCP to communicate with the VM.
+  #   The default Vagrantfile template includes Ethernet1 and Ethernet2.  Add lines similar to those below to create
+  #     additional NICs which will be Ethernet 3-n                                
+  #   Using link-local addresses to satisfy the Vagrantfile config parser, only.  They will not be used by vEOS.
+  #config.vm.network 'private_network', ip: '169.254.1.11', auto_config: false, virtualbox__intnet: true
+  #config.vm.network 'private_network', virtualbox__intnet: 'mynetwork-1', ip: '169.254.1.11', auto_config: false
+  # Create Ethernet3
+  eos.vm.network 'private_network', virtualbox__intnet: true, ip: '169.254.1.11', auto_config: false
+  # Create Ethernet4
+  eos.vm.network 'private_network', virtualbox__intnet: true, ip: '169.254.1.11', auto_config: false
+  # $ for f in new_good.conf merge_good.conf merge_typo.conf; do
+  #   $   wget https://raw.githubusercontent.com/napalm-automation/napalm/master/docs/tutorials/sample_configs/$f
+  #   $ done
+  eos.vm.provider "virtualbox" do |v|
+    # Unconnent for debugging or to see the console during ZTP
+    #v.gui = true
+
+    # Networking:
+    #  nic1 is always Management1 which is set to dhcp in the basebox.
+    #
+    # Patch Ethernet1 to a particular internal network
+    v.customize ["modifyvm", :id, "--nic2", "intnet", "--intnet2", "vEOS-intnet1"]
+    # Patch Ethernet2 to a particular internal network
+    v.customize ["modifyvm", :id, "--nic3", "intnet", "--intnet3", "vEOS-intnet2"]
   end
+
+  # Configure a forwarded port to access eAPI on vEOS
+  # https://username:password@localhost:8443/command-api
+  eos.vm.network "forwarded_port", guest: 443, host: 8443
+
+  # The sample, below is preconfigured in the basebox
+  # Enable eAPI in the EOS config
+  eos.vm.provision 'shell', inline: <<-SHELL
+    FastCli -p 15 -c "configure
+    username vagrant privilege 15 role network-admin secret vagrant
+    management api http-commands
+      no shutdown
+    end
+    copy running-config startup-config"
+  SHELL
+
+  # Provision files on to flash:
+  #config.vm.provision 'file', source: 'files/rc.eos', destination: '/mnt/flash/rc.eos'
+  #config.vm.provision 'file', source: 'files/rphm-1.1.0-1.rpm', destination: '/mnt/flash/rphm-1.1.0-1.rpm'
+end
   config.vm.define "junos" do |junos|
     # thanks to https://keepingitclassless.net/2015/03/go-go-gadget-networking-lab/
     junos.vm.box = "juniper/ffp-12.1X47-D15.4-packetmode"
