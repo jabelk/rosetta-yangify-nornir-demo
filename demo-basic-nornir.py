@@ -13,7 +13,7 @@ from nornir.plugins.tasks.networking import napalm_cli
 from nornir.plugins.tasks.files import write_file
 from nornir.plugins.functions.text import print_result
 from nornir.core.filter import F
-from nornir.plugins.tasks.networking import napalm_get
+from nornir.plugins.tasks.networking import napalm_get, napalm_configure
 from nornir.plugins.tasks.networking import netmiko_send_command
 
 # rest api
@@ -92,20 +92,21 @@ def rosetta_merge_new_config_from_data_model(task):
     {'network-instance': [{'name': 'default', 'config': {'name': 'default'}, 
     'vlans': {'vlan': [{'vlan-id': 10, 'config': {'vlan-id': 10, 'name': 'prod', 'status': 'ACTIVE'}}, 
     {'vlan-id': 20, 'config': {'vlan-id': 20, 'name': 'dev', 'status': 'SUSPENDED'}}]}}]}}
-    print("New Vlans Data Model")
-    print(json.dumps(new_vlans, indent=4))
-    print("translate")
     native = rosetta_device_driver.translate(candidate=new_vlans)
-    print(native)
     try:
         running_config = json.load(task.host["rosetta_parsed_config"])
     except AttributeError: # fixing for AttributeError: 'str' object has no attribute 'read'
         running_config = json.loads(task.host["rosetta_parsed_config"])
-    print("running config is ")
-    print(running_config)
     merged_config = rosetta_device_driver.merge(candidate=new_vlans, running=running_config)
-    print("merged config is ")
-    print(merged_config)
+    # print("merged config is ")
+    # print(merged_config)
+    # syntax errors for merge config need to be fixed 
+    # task.run(
+    #     name="Loading Rosetta Generated Configuration on the device",
+    #     task=napalm_configure,
+    #     replace=False,
+    #     configuration=merged_config,
+    # )
 
 def backup(task, path):
     if task.host.platform == "ios" or "eos":
@@ -164,93 +165,6 @@ def export_vars_to_yaml_standalone(task, path="config/data_models_from_parsing")
     task.run(task=create_json_file, python_object_input=ntc_rosetta_dict, filename=f"{path}/{task.host.platform}_device_rosetta.json")
     task.run(task=create_yaml_file, python_object_input=ntc_rosetta_dict, filename=f"{path}/{task.host.platform}_device_rosetta.yml")
 
-
-def ios_devices_yangify():
-    nornir = InitNornir()
-    # Get Openconfig Interface Data from CSR1000v from Restconf
-    ios_devices = nornir.filter(F(platform="ios"))
-    # result = ios_devices.run(task=temp)
-    # print_result(result, severity_level=logging.INFO)
-
-    # back up to disk using napalm getter 
-    # result = ios_devices.run(task=backup, path="config/backed_up_from_device")
-    # print_result(result, severity_level=logging.INFO)
-    
-    # read backup from disk - assign to nornir inventory host attribute
-    ios_devices.run(task=native_config_from_disk)
-    # ios_devices.inventory.hosts.get("csr1kv").data["native_config"] = config_from_disk["csr1kv"].result
-
-    # parse config into data model using rosetta / yangify, put yaml / json to file for reference
-    result = ios_devices.run(task=rosetta_parse_native_to_data_model)
-    print_result(result, severity_level=logging.INFO)
-
-    print("rosetta dict\n\n")
-    print(ios_devices.inventory.hosts["csr1kv"]["rosetta_parsed_config"])
-    path = "config/data_models_from_parsing"
-    ntc_rosetta_dict = ios_devices.inventory.hosts["csr1kv"]["rosetta_parsed_config"]
-    native_config = ios_devices.inventory.hosts["csr1kv"]["native_config"]
-    ios_devices.run(task=create_json_file, python_object_input=ntc_rosetta_dict, filename=f"{path}/csr1kv_rosetta.json")
-    ios_devices.run(task=create_yaml_file, python_object_input=ntc_rosetta_dict, filename=f"{path}/csr1kv_rosetta.yml")
-    # rosetta_parsed_config
-    result = ios_devices.run(task=transfer_parsed_json_to_host_vars_memory)
-    print_result(result, severity_level=logging.INFO)
-
-    inventory_dict = ios_devices.inventory.hosts["csr1kv"]["rosetta_parsed_config"]
-    print(ios_devices.inventory.hosts["csr1kv"]["rosetta_parsed_config"])
-    # Build New Inventory File with Config / Parsed Config in memory Inventory
-    current_inventory = load_inventory()
-    current_inventory["csr1kv"]["data"]["rosetta_parsed_config"] = ntc_rosetta_dict
-    current_inventory["csr1kv"]["data"]["native_config"] = native_config
-    result = ios_devices.run(task=create_yaml_file, python_object_input=current_inventory)
-    print_result(result, severity_level=logging.INFO)
-
-    # merge new config into running parsed
-    result = ios_devices.run(task=rosetta_merge_new_config_from_data_model)
-    print_result(result, severity_level=logging.INFO)
-    # result = ios_devices.run(task=get_restconf_all_interfaces, model="openconfig")
-    # print_result(result["csr1kv"], severity_level=logging.INFO)
-
-
-def eos_devices_yangify() -> None:
-    nornir = InitNornir()
-    # Get Openconfig Interface Data from CSR1000v from Restconf
-    eos_devices = nornir.filter(F(platform="eos"))
-
-    # back up to disk using napalm getter 
-    result = eos_devices.run(task=backup, path="config/backed_up_from_device")
-    print_result(result, severity_level=logging.INFO)
-    
-    # read backup from disk - assign to nornir inventory host attribute
-    eos_devices.run(task=native_config_from_disk)
-
-    # parse config into data model using rosetta / yangify, put yaml / json to file for reference
-    result = eos_devices.run(task=rosetta_parse_native_to_data_model)
-    print_result(result, severity_level=logging.INFO)
-    print("rosetta dict\n\n")
-    print(eos_devices.inventory.hosts["eos_device"]["rosetta_parsed_config"])
-    path = "config/data_models_from_parsing"
-    ntc_rosetta_dict = eos_devices.inventory.hosts["eos_device"]["rosetta_parsed_config"]
-    native_config = eos_devices.inventory.hosts["eos_device"]["native_config"]
-    eos_devices.run(task=create_json_file, python_object_input=ntc_rosetta_dict, filename=f"{path}/eos_device_rosetta.json")
-    eos_devices.run(task=create_yaml_file, python_object_input=ntc_rosetta_dict, filename=f"{path}/eos_device_rosetta.yml")
-    # rosetta_parsed_config
-    result = eos_devices.run(task=transfer_parsed_json_to_host_vars_memory)
-    print_result(result, severity_level=logging.INFO)
-
-    inventory_dict = eos_devices.inventory.hosts["eos_device"]["rosetta_parsed_config"]
-    print(eos_devices.inventory.hosts["eos_device"]["rosetta_parsed_config"])
-    # Build New Inventory File with Config / Parsed Config in memory Inventory
-    current_inventory = load_inventory()
-    current_inventory["eos_device"]["data"]["rosetta_parsed_config"] = ntc_rosetta_dict
-    current_inventory["eos_device"]["data"]["native_config"] = native_config
-    result = eos_devices.run(task=create_yaml_file, python_object_input=current_inventory)
-    print_result(result, severity_level=logging.INFO)
-
-    # merge new config into running parsed
-    result = eos_devices.run(task=rosetta_merge_new_config_from_data_model)
-    print_result(result, severity_level=logging.INFO)
-
-
 def main():
     nornir = InitNornir()
     # back up to disk using napalm getter 
@@ -279,10 +193,9 @@ def main():
     # write new inventory to file
     result = nornir.run(task=create_yaml_file, python_object_input=current_inventory)
     print_result(result, severity_level=logging.INFO)
-    pass
+    # merge new config for each os type from common openconfig data model 
+    result = nornir.run(task=rosetta_merge_new_config_from_data_model)
+    print_result(result, severity_level=logging.INFO)
 
 if __name__ == "__main__":
-    # ios_devices_yangify()
-    # eos_devices_yangify()
-    # junos_device_yangify()
     main()
