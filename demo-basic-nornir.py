@@ -1,29 +1,23 @@
 #!/usr/bin/env python
-# thanks to Nick R and dmfigol examples:
 
 """
 Nornir runbook to run arbitrary commands on network devices
 """
-
-import os
-import logging
-from nornir import InitNornir
-from nornir.core.task import Task
-from nornir.plugins.tasks.networking import napalm_cli
-from nornir.plugins.tasks.files import write_file
-from nornir.plugins.functions.text import print_result
-from nornir.core.filter import F
-from nornir.plugins.tasks.networking import napalm_get, napalm_configure
-from nornir.plugins.tasks.networking import netmiko_send_command
-
-# rest api
 import json
 import yaml
+import os
+import logging
 from copy import deepcopy
 import requests
 from requests.exceptions import HTTPError
 from requests.auth import HTTPBasicAuth
 requests.packages.urllib3.disable_warnings()
+from nornir import InitNornir
+from nornir.core.task import Task
+from nornir.plugins.tasks.files import write_file
+from nornir.plugins.functions.text import print_result
+from nornir.core.filter import F
+from nornir.plugins.tasks.networking import napalm_get, napalm_configure, napalm_cli, netmiko_send_command
 auth = HTTPBasicAuth('vagrant', 'vagrant')
 headers = {
     "Content-Type": "application/yang-data+json", 
