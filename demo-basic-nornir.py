@@ -92,8 +92,8 @@ def rosetta_merge_new_config_from_data_model(task):
     except AttributeError: # fixing for AttributeError: 'str' object has no attribute 'read'
         running_config = json.loads(task.host["rosetta_parsed_config"])
     merged_config = rosetta_device_driver.merge(candidate=new_vlans, running=running_config)
-    # print("merged config is ")
-    # print(merged_config)
+    print("Proposed New Native config from Rosetta is ")
+    print(merged_config)
     # syntax errors for merge config need to be fixed 
     # task.run(
     #     name="Loading Rosetta Generated Configuration on the device",
