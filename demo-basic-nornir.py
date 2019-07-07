@@ -1,56 +1,21 @@
 #!/usr/bin/env python
 
-"""
-Nornir runbook to run arbitrary commands on network devices
-"""
 import json
 import yaml
 import os
 import logging
 from copy import deepcopy
-import requests
-from requests.exceptions import HTTPError
-from requests.auth import HTTPBasicAuth
-requests.packages.urllib3.disable_warnings()
 from nornir import InitNornir
 from nornir.core.task import Task
 from nornir.plugins.tasks.files import write_file
 from nornir.plugins.functions.text import print_result
 from nornir.core.filter import F
 from nornir.plugins.tasks.networking import napalm_get, napalm_configure, napalm_cli, netmiko_send_command
-auth = HTTPBasicAuth('vagrant', 'vagrant')
-headers = {
-    "Content-Type": "application/yang-data+json", 
-    "Accept": "application/yang-data+json"
-}
+
 
 # rosetta / yangify
 from ntc_rosetta import get_driver
 from yangson.exceptions import SemanticError
-
-def get_restconf_single_interface(task, model="native", port="2225",int_id="3"):
-    if model == "native":
-        url = 'https://{}:{}/restconf/data/Cisco-IOS-XE-native:native/interface=GigabitEthernet/{}'.format(task.host.hostname,port,int_id)
-    elif model == "ietf":
-        url = 'https://{}:{}/restconf/data/ietf-interfaces:interfaces/interface=GigabitEthernet{}'.format(task.host.hostname,port,int_id)
-    elif model == "openconfig":
-        url = 'https://{}:{}/restconf/data/openconfig-interfaces:interfaces/interface=GigabitEthernet{}'.format(task.host.hostname,port,int_id)
-
-    # url = 'https://127.0.0.1:2225/restconf/data/Cisco-IOS-XE-native:native/interface'
-    response = requests.get(url, headers=headers, auth=auth, verify=False)
-    return response.text
-
-def get_restconf_all_interfaces(task, model="native", port="2225"):
-    if model == "native":
-        url = 'https://{}:{}/restconf/data/Cisco-IOS-XE-native:native/interface'.format(task.host.hostname,port)
-    elif model == "ietf":
-        url = 'https://{}:{}/restconf/data/ietf-interfaces:interfaces'.format(task.host.hostname,port)
-    elif model == "openconfig":
-        url = 'https://{}:{}/restconf/data/openconfig-interfaces:interfaces'.format(task.host.hostname,port)
-
-    # url = 'https://127.0.0.1:2225/restconf/data/Cisco-IOS-XE-native:native/interface'
-    response = requests.get(url, headers=headers, auth=auth, verify=False)
-    return response.text
 
 def native_config_from_disk(task):
     with open("config/backed_up_from_device/{}_napalm_backup.conf".format(task.host.name), "r") as f:
