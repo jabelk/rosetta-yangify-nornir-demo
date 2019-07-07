@@ -1,5 +1,6 @@
 csr1kv:
   data:
+    backup_command: show run all
     native_config: ''
     rosetta_parsed_config: ''
   groups:
@@ -8,46 +9,117 @@ csr1kv:
   port: 12204
 eos_device:
   data:
-    native_config: "! Command: show running-config\n! device: localhost (vEOS, EOS-4.20.1F)\n\
-      !\n! boot system flash:/vEOS-lab.swi\n!\nevent-handler dhclient\n   trigger\
-      \ on-boot\n   action bash sudo /mnt/flash/initialize_ma1.sh\n!\ntransceiver\
-      \ qsfp default-mode 4x10G\n!\nspanning-tree mode mstp\n!\naaa authorization\
-      \ exec default local\n!\naaa root secret sha512 $6$c4Afx9gi3Vomn3MJ$oTyx9V.4j9BKouR2szQA7IA7qLRMKoqOMeIr0RFjx0TLmESI5pmIb2MgBC//OymzhKkTxtOa4Htdg7YdTTAqc.\n\
-      !\nusername admin privilege 15 role network-admin secret sha512 $6$d0ipetfKSIlGjMfw$CfYqGlcN5cwi1GJgPGyrTEzjA8tPC8XrDMjf8WBwc8SmyaQM25x5YCrCvPz8OOxqwVS4zAMUs6ICiKcVk3OBc0\n\
-      username vagrant privilege 15 role network-admin secret sha512 $6$WIAumVmhEeJeBvic$OBvvyHS.JUZF5Zvv6fRaZpPOUyCWGJykRHvnrssiTGTeCIt5zNwL2j9cda.OU.TAB3INTMeA2DUBOULu.O2Mr.\n\
-      !\ninterface Ethernet1\n!\ninterface Ethernet2\n!\ninterface Management1\n \
-      \  ip address 10.0.2.15/24\n!\nno ip routing\n!\nmanagement api http-commands\n\
-      \   no shutdown\n!\nend\n"
-    rosetta_parsed_config:
-      openconfig-interfaces:interfaces:
-        interface:
-        - config:
-            enabled: true
-            name: Ethernet1
-            type: iana-if-type:ethernetCsmacd
-          name: Ethernet1
-        - config:
-            enabled: true
-            name: Ethernet2
-            type: iana-if-type:ethernetCsmacd
-          name: Ethernet2
-        - config:
-            enabled: true
-            name: Management1
-          name: Management1
-      openconfig-network-instance:network-instances:
-        network-instance:
-        - config:
-            name: default
-          name: default
+    backup_command: show run all
+    native_config: ''
+    rosetta_parsed_config: ''
   groups:
   - eos
   hostname: 127.0.0.1
   port: 8443
 junos_device:
   data:
-    native_config: ''
-    rosetta_parsed_config: ''
+    backup_command: show configuration | display xml
+    native_config: "\n<rpc-reply xmlns:junos=\"http://xml.juniper.net/junos/12.1X47/junos\"\
+      >\n    <configuration junos:commit-seconds=\"1562456610\" junos:commit-localtime=\"\
+      2019-07-06 23:43:30 UTC\" junos:commit-user=\"root\">\n            <version>12.1X47-D15.4</version>\n\
+      \            <system>\n                <host-name>vagrant-junos-test</host-name>\n\
+      \                <root-authentication>\n                    <encrypted-password>$1$nq.N1UsY$JxA/ESAj3KuXseXE597gg0</encrypted-password>\n\
+      \                    <ssh-rsa>\n                        <name>ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDGZWqmmo8PDImxp4hJNa0y+abAmeKwQqm2yE0UuWyMFpj+SrCmJckug48wQOTwz9rAEKI3KYzDimMoQpFdrr32PQxrIwQ2hK3kczYlz+b+WQTlLZQ9lrkm3kVjuUuygtqo0qmqkxucTQ20UpReNoq6VBM0O43KqmWm3yaflzoSrjZvHZA7ECk/YvbMidCMvOfbCXOZEAiipgI8PfzdguJbpOLNJW5kyDxF7N6boRqgSig55Y4PTiQ9lec3JBUd9y/TsNrQndd/vd/qipDj3oL7iq3vulTeORFgFsOUrV6dZcYrefDrAQh5nejJQW7QNqrkPZEawBW648VnkB3Q7ijR\
+      \ vagrant</name>\n                    </ssh-rsa>\n                </root-authentication>\n\
+      \                <login>\n                    <user>\n                     \
+      \   <name>vagrant</name>\n                        <uid>2000</uid>\n        \
+      \                <class>super-user</class>\n                        <authentication>\n\
+      \                            <encrypted-password>$1$xr3BCSCQ$FOLQ4pPyBXtzI5BWMcQ0A0</encrypted-password>\n\
+      \                            <ssh-rsa>\n                                <name>ssh-rsa\
+      \ AAAAB3NzaC1yc2EAAAABIwAAAQEA6NF8iallvQVp22WDkTkyrtvp9eWW6A8YVr+kz4TjGYe7gHzIw+niNltGEFHzD8+v1I2YJ6oXevct1YeS0o9HZyN1Q9qgCgzUFtdOKLv6IedplqoPkcmF0aYet2PkEDo3MlTBckFXPITAMzF8dJSIFo9D8HfdOV0IAdx4O7PtixWKn5y2hMNG0zQPyUecp4pzC6kivAIhyfHilFR61RGL+GPXQ2MWZWFYbAGjyiYJnAmCP3NOTd0jMZEnDkbUvxhMmBYSdETk1rRgm+R4LOzFUGaHqHDLKLX+FIPKcF96hrucXzcWyLbIbEgE98OHlnVYCzRdK8jlqm8tehUc9c9WhQ==\
+      \ vagrant insecure public key</name>\n                            </ssh-rsa>\n\
+      \                        </authentication>\n                    </user>\n  \
+      \              </login>\n                <services>\n                    <ssh>\n\
+      \                        <root-login>allow</root-login>\n                  \
+      \  </ssh>\n                    <netconf>\n                        <ssh>\n  \
+      \                      </ssh>\n                    </netconf>\n            \
+      \        <web-management>\n                        <http>\n                \
+      \            <interface>ge-0/0/0.0</interface>\n                        </http>\n\
+      \                    </web-management>\n                </services>\n      \
+      \          <syslog>\n                    <user>\n                        <name>*</name>\n\
+      \                        <contents>\n                            <name>any</name>\n\
+      \                            <emergency/>\n                        </contents>\n\
+      \                    </user>\n                    <file>\n                 \
+      \       <name>messages</name>\n                        <contents>\n        \
+      \                    <name>any</name>\n                            <any/>\n\
+      \                        </contents>\n                        <contents>\n \
+      \                           <name>authorization</name>\n                   \
+      \         <info/>\n                        </contents>\n                   \
+      \ </file>\n                    <file>\n                        <name>interactive-commands</name>\n\
+      \                        <contents>\n                            <name>interactive-commands</name>\n\
+      \                            <any/>\n                        </contents>\n \
+      \                   </file>\n                </syslog>\n                <license>\n\
+      \                    <autoupdate>\n                        <url>\n         \
+      \                   <name>https://ae1.juniper.net/junos/key_retrieval</name>\n\
+      \                        </url>\n                    </autoupdate>\n       \
+      \         </license>\n            </system>\n            <interfaces>\n    \
+      \            <interface>\n                    <name>ge-0/0/0</name>\n      \
+      \              <unit>\n                        <name>0</name>\n            \
+      \            <family>\n                            <inet>\n                \
+      \                <dhcp>\n                                </dhcp>\n         \
+      \                   </inet>\n                        </family>\n           \
+      \         </unit>\n                </interface>\n                <interface>\n\
+      \                    <name>ge-0/0/1</name>\n                    <unit>\n   \
+      \                     <name>0</name>\n                        <family>\n   \
+      \                         <inet>\n                                <address>\n\
+      \                                    <name>192.168.33.10/22</name>\n       \
+      \                         </address>\n                            </inet>\n\
+      \                        </family>\n                    </unit>\n          \
+      \      </interface>\n                <interface>\n                    <name>ge-0/0/2</name>\n\
+      \                    <unit>\n                        <name>0</name>\n      \
+      \                  <family>\n                            <inet>\n          \
+      \                      <dhcp>\n                                </dhcp>\n   \
+      \                         </inet>\n                        </family>\n     \
+      \               </unit>\n                </interface>\n                <interface>\n\
+      \                    <name>ge-0/0/3</name>\n                    <unit>\n   \
+      \                     <name>0</name>\n                        <family>\n   \
+      \                         <inet>\n                                <address>\n\
+      \                                    <name>192.168.34.10/24</name>\n       \
+      \                         </address>\n                            </inet>\n\
+      \                        </family>\n                    </unit>\n          \
+      \      </interface>\n                <interface>\n                    <name>ge-0/0/4</name>\n\
+      \                    <unit>\n                        <name>0</name>\n      \
+      \                  <family>\n                            <inet>\n          \
+      \                      <dhcp>\n                                </dhcp>\n   \
+      \                         </inet>\n                        </family>\n     \
+      \               </unit>\n                </interface>\n                <interface>\n\
+      \                    <name>ge-0/0/5</name>\n                    <unit>\n   \
+      \                     <name>0</name>\n                        <family>\n   \
+      \                         <inet>\n                                <address>\n\
+      \                                    <name>192.168.35.10/24</name>\n       \
+      \                         </address>\n                            </inet>\n\
+      \                        </family>\n                    </unit>\n          \
+      \      </interface>\n                <interface>\n                    <name>ge-0/0/6</name>\n\
+      \                    <unit>\n                        <name>0</name>\n      \
+      \                  <family>\n                            <inet>\n          \
+      \                      <dhcp>\n                                </dhcp>\n   \
+      \                         </inet>\n                        </family>\n     \
+      \               </unit>\n                </interface>\n                <interface>\n\
+      \                    <name>ge-0/0/7</name>\n                    <unit>\n   \
+      \                     <name>0</name>\n                        <family>\n   \
+      \                         <inet>\n                                <address>\n\
+      \                                    <name>192.168.36.10/24</name>\n       \
+      \                         </address>\n                            </inet>\n\
+      \                        </family>\n                    </unit>\n          \
+      \      </interface>\n            </interfaces>\n            <security>\n   \
+      \             <forwarding-options>\n                    <family>\n         \
+      \               <inet6>\n                            <mode>packet-based</mode>\n\
+      \                        </inet6>\n                        <mpls>\n        \
+      \                    <mode>packet-based</mode>\n                        </mpls>\n\
+      \                    </family>\n                </forwarding-options>\n    \
+      \        </security>\n    </configuration>\n    <cli>\n        <banner></banner>\n\
+      \    </cli>\n</rpc-reply>\n"
+    rosetta_parsed_config:
+      openconfig-network-instance:network-instances:
+        network-instance:
+        - config:
+            name: default
+          name: default
   groups:
   - junos
   hostname: 127.0.0.1

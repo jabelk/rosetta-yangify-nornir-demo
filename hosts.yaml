@@ -4,6 +4,7 @@ csr1kv:
   hostname: 127.0.0.1
   port: 12204
   data:
+    backup_command: "show run all"
     rosetta_parsed_config: ""
     native_config: ""
   groups:
@@ -14,6 +15,7 @@ eos_device:
   hostname: 127.0.0.1
   port: 8443
   data:
+    backup_command: "show run all"
     rosetta_parsed_config: ""
     native_config: ""
   groups:
@@ -27,6 +29,7 @@ junos_device:
   data:
     rosetta_parsed_config: ""
     native_config: ""
+    backup_command: "show configuration | display xml"
   groups:
     - junos
 # jnpr.junos.exception.ConnectAuthError: ConnectAuthError(127.0.0.1)

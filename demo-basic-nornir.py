@@ -14,6 +14,7 @@ from nornir.plugins.tasks.files import write_file
 from nornir.plugins.functions.text import print_result
 from nornir.core.filter import F
 from nornir.plugins.tasks.networking import napalm_get
+from nornir.plugins.tasks.networking import netmiko_send_command
 
 # rest api
 import json
@@ -108,14 +109,16 @@ def rosetta_merge_new_config_from_data_model(task):
 
 def backup(task, path):
     r = task.run(
-        task=napalm_get,
-        getters=["config"],
+        task=netmiko_send_command,
+        command_string=task.host["backup_command"],
         severity_level=logging.DEBUG,
     )
+    
+    native_config = r[0].result
     task.run(
         task=write_file,
         filename=f"{path}/{task.host}_napalm_backup.conf",
-        content=r.result["config"]["running"],
+        content=native_config,
     )
 
 def load_inventory():
@@ -242,30 +245,46 @@ def junos_device_yangify():
     # parse config into data model using rosetta / yangify, put yaml / json to file for reference
     result = junos_devices.run(task=rosetta_parse_native_to_data_model)
     print_result(result, severity_level=logging.INFO)
-    print("rosetta dict\n\n")
-    print(junos_devices.inventory.hosts["junos_device"]["rosetta_parsed_config"])
-    # path = "config/data_models_from_parsing"
-    # ntc_rosetta_dict = junos_devices.inventory.hosts["junos_device"]["rosetta_parsed_config"]
-    # native_config = junos_devices.inventory.hosts["junos_device"]["native_config"]
-    # junos_devices.run(task=create_json_file, python_object_input=ntc_rosetta_dict, filename=f"{path}/junos_device_rosetta.json")
-    # junos_devices.run(task=create_yaml_file, python_object_input=ntc_rosetta_dict, filename=f"{path}/junos_device_rosetta.yml")
-    # # rosetta_parsed_config
-    # result = junos_devices.run(task=parsed_config_from_disk)
-    # print_result(result, severity_level=logging.INFO)
-
-    # inventory_dict = junos_devices.inventory.hosts["junos_device"]["rosetta_parsed_config"]
+    # print("rosetta dict\n\n")
     # print(junos_devices.inventory.hosts["junos_device"]["rosetta_parsed_config"])
-    # # Build New Inventory File with Config / Parsed Config in memory Inventory
-    # current_inventory = load_inventory()
-    # current_inventory["junos_device"]["data"]["rosetta_parsed_config"] = ntc_rosetta_dict
-    # current_inventory["junos_device"]["data"]["native_config"] = native_config
-    # result = junos_devices.run(task=create_yaml_file, python_object_input=current_inventory)
-    # print_result(result, severity_level=logging.INFO)
-
-    # merge new config into running parsed
-    result = junos_devices.run(task=rosetta_merge_new_config_from_data_model)
+    path = "config/data_models_from_parsing"
+    ntc_rosetta_dict = junos_devices.inventory.hosts["junos_device"]["rosetta_parsed_config"]
+    native_config = junos_devices.inventory.hosts["junos_device"]["native_config"]
+    junos_devices.run(task=create_json_file, python_object_input=ntc_rosetta_dict, filename=f"{path}/junos_device_rosetta.json")
+    junos_devices.run(task=create_yaml_file, python_object_input=ntc_rosetta_dict, filename=f"{path}/junos_device_rosetta.yml")
+    # rosetta_parsed_config
+    result = junos_devices.run(task=parsed_config_from_disk)
     print_result(result, severity_level=logging.INFO)
 
+    inventory_dict = junos_devices.inventory.hosts["junos_device"]["rosetta_parsed_config"]
+    print(junos_devices.inventory.hosts["junos_device"]["rosetta_parsed_config"])
+    # Build New Inventory File with Config / Parsed Config in memory Inventory
+    current_inventory = load_inventory()
+    current_inventory["junos_device"]["data"]["rosetta_parsed_config"] = ntc_rosetta_dict
+    current_inventory["junos_device"]["data"]["native_config"] = native_config
+    result = junos_devices.run(task=create_yaml_file, python_object_input=current_inventory)
+    print_result(result, severity_level=logging.INFO)
+
+    # # merge new config into running parsed
+    # result = junos_devices.run(task=rosetta_merge_new_config_from_data_model)
+    # print_result(result, severity_level=logging.INFO)
+# Traceback (most recent call last):
+#   File "demo-basic-nornir.py", line 101, in rosetta_merge_new_config_from_data_model
+#     running_config = json.load(task.host["rosetta_parsed_config"])
+#   File "/usr/local/Cellar/python/3.7.3/Frameworks/Python.framework/Versions/3.7/lib/python3.7/json/__init__.py", line 293, in load
+#     return loads(fp.read(),
+# AttributeError: 'dict' object has no attribute 'read'
+
+# During handling of the above exception, another exception occurred:
+
+# Traceback (most recent call last):
+#   File "/Users/jabelk/.virtualenvs/rosetta_yangify/lib/python3.7/site-packages/nornir/core/task.py", line 67, in start
+#     r = self.task(self, **self.params)
+#   File "demo-basic-nornir.py", line 103, in rosetta_merge_new_config_from_data_model
+#     running_config = json.loads(task.host["rosetta_parsed_config"])
+#   File "/usr/local/Cellar/python/3.7.3/Frameworks/Python.framework/Versions/3.7/lib/python3.7/json/__init__.py", line 341, in loads
+#     raise TypeError(f'the JSON object must be str, bytes or bytearray, '
+# TypeError: the JSON object must be str, bytes or bytearray, not dict
 
 if __name__ == "__main__":
     # ios_devices_yangify()
