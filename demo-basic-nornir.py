@@ -64,7 +64,7 @@ def native_config_from_disk(task):
     # Save the compiled configuration into a host variable
     task.host["native_config"] = native_config
 
-def parsed_config_from_disk(task):
+def transfer_parsed_json_to_host_vars_memory(task):
     with open("config/data_models_from_parsing/{}_rosetta.json".format(task.host.name), "r") as f:
         ntc_rosetta_json = f.read()
     task.host["rosetta_parsed_config"] = ntc_rosetta_json
@@ -121,6 +121,7 @@ def backup(task, path):
         content=native_config,
     )
 
+
 def load_inventory():
     with open("hosts.yaml", "r") as f:
         inventory_dict = yaml.safe_load(f.read())
@@ -145,6 +146,26 @@ def create_json_file(task, python_object_input, filename="hosts_new.yaml"):
         content=json_file,
     ) 
 
+def export_vars_to_yaml_standalone(task, path="config/data_models_from_parsing"):
+    ntc_rosetta_dict = task.host["rosetta_parsed_config"]
+    native_config = task.host["native_config"]
+    # create json / yaml files from parsed config
+    task.run(task=create_json_file, python_object_input=ntc_rosetta_dict, filename=f"{path}/{task.host.platform}_device_rosetta.json")
+    task.run(task=create_yaml_file, python_object_input=ntc_rosetta_dict, filename=f"{path}/{task.host.platform}_device_rosetta.yml")
+
+def export_vars_to_inventory(task, path="config/data_models_from_parsing"):
+    ntc_rosetta_dict = task.host["rosetta_parsed_config"]
+    native_config = task.host["native_config"]
+    # rosetta_parsed_config
+    result = task.run(task=transfer_parsed_json_to_host_vars_memory)
+    inventory_dict = task.host["rosetta_parsed_config"]
+    print(task.host["rosetta_parsed_config"])
+    # Build New Inventory File with Config / Parsed Config in memory Inventory
+    current_inventory = load_inventory()
+    current_inventory[task.host.name]["data"]["rosetta_parsed_config"] = ntc_rosetta_dict
+    current_inventory[task.host.name]["data"]["native_config"] = native_config
+    result = task.run(task=create_yaml_file, python_object_input=current_inventory)
+    print_result(result, severity_level=logging.INFO)
 def ios_devices_yangify():
     nornir = InitNornir()
     # Get Openconfig Interface Data from CSR1000v from Restconf
@@ -172,7 +193,7 @@ def ios_devices_yangify():
     ios_devices.run(task=create_json_file, python_object_input=ntc_rosetta_dict, filename=f"{path}/csr1kv_rosetta.json")
     ios_devices.run(task=create_yaml_file, python_object_input=ntc_rosetta_dict, filename=f"{path}/csr1kv_rosetta.yml")
     # rosetta_parsed_config
-    result = ios_devices.run(task=parsed_config_from_disk)
+    result = ios_devices.run(task=transfer_parsed_json_to_host_vars_memory)
     print_result(result, severity_level=logging.INFO)
 
     inventory_dict = ios_devices.inventory.hosts["csr1kv"]["rosetta_parsed_config"]
@@ -214,7 +235,7 @@ def eos_devices_yangify() -> None:
     eos_devices.run(task=create_json_file, python_object_input=ntc_rosetta_dict, filename=f"{path}/eos_device_rosetta.json")
     eos_devices.run(task=create_yaml_file, python_object_input=ntc_rosetta_dict, filename=f"{path}/eos_device_rosetta.yml")
     # rosetta_parsed_config
-    result = eos_devices.run(task=parsed_config_from_disk)
+    result = eos_devices.run(task=transfer_parsed_json_to_host_vars_memory)
     print_result(result, severity_level=logging.INFO)
 
     inventory_dict = eos_devices.inventory.hosts["eos_device"]["rosetta_parsed_config"]
@@ -247,23 +268,7 @@ def junos_device_yangify():
     print_result(result, severity_level=logging.INFO)
     # print("rosetta dict\n\n")
     # print(junos_devices.inventory.hosts["junos_device"]["rosetta_parsed_config"])
-    path = "config/data_models_from_parsing"
-    ntc_rosetta_dict = junos_devices.inventory.hosts["junos_device"]["rosetta_parsed_config"]
-    native_config = junos_devices.inventory.hosts["junos_device"]["native_config"]
-    junos_devices.run(task=create_json_file, python_object_input=ntc_rosetta_dict, filename=f"{path}/junos_device_rosetta.json")
-    junos_devices.run(task=create_yaml_file, python_object_input=ntc_rosetta_dict, filename=f"{path}/junos_device_rosetta.yml")
-    # rosetta_parsed_config
-    result = junos_devices.run(task=parsed_config_from_disk)
-    print_result(result, severity_level=logging.INFO)
-
-    inventory_dict = junos_devices.inventory.hosts["junos_device"]["rosetta_parsed_config"]
-    print(junos_devices.inventory.hosts["junos_device"]["rosetta_parsed_config"])
-    # Build New Inventory File with Config / Parsed Config in memory Inventory
-    current_inventory = load_inventory()
-    current_inventory["junos_device"]["data"]["rosetta_parsed_config"] = ntc_rosetta_dict
-    current_inventory["junos_device"]["data"]["native_config"] = native_config
-    result = junos_devices.run(task=create_yaml_file, python_object_input=current_inventory)
-    print_result(result, severity_level=logging.INFO)
+    junos_devices.run(task=export_vars_to_inventory(path="config/data_models_from_parsing"))
 
     # # merge new config into running parsed
     # result = junos_devices.run(task=rosetta_merge_new_config_from_data_model)
@@ -286,7 +291,32 @@ def junos_device_yangify():
 #     raise TypeError(f'the JSON object must be str, bytes or bytearray, '
 # TypeError: the JSON object must be str, bytes or bytearray, not dict
 
+def main():
+    nornir = InitNornir()
+    # Get Openconfig Interface Data from CSR1000v from Restconf
+    nornir = nornir.filter(F(platform="junos"))
+
+    # back up to disk using napalm getter 
+    result = nornir.run(task=backup, path="config/backed_up_from_device")
+    print_result(result, severity_level=logging.INFO)
+    
+    # read backup from disk - assign to nornir inventory host attribute
+    nornir.run(task=native_config_from_disk)
+
+    # parse config into data model using rosetta / yangify, put yaml / json to file for reference
+    result = nornir.run(task=rosetta_parse_native_to_data_model)
+    print_result(result, severity_level=logging.INFO)
+    result = nornir.run(task=export_vars_to_yaml_standalone)
+    print_result(result, severity_level=logging.INFO)
+
+    result = nornir.run(task=export_vars_to_inventory)
+    print_result(result, severity_level=logging.INFO)
+
+    print_result(result, severity_level=logging.INFO)
+    pass
+
 if __name__ == "__main__":
     # ios_devices_yangify()
     # eos_devices_yangify()
-    junos_device_yangify()
+    # junos_device_yangify()
+    main()
