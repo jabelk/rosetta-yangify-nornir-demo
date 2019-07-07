@@ -1,8 +1,82 @@
 csr1kv:
   data:
     backup_command: show run all
-    native_config: ''
-    rosetta_parsed_config: ''
+    native_config: "Building configuration...\n\nCurrent configuration : 3821 bytes\n\
+      !\n! Last configuration change at 17:08:01 UTC Sat Jul 6 2019\n!\nversion 16.6\n\
+      service timestamps debug datetime msec\nservice timestamps log datetime msec\n\
+      platform qfp utilization monitor load 80\nno platform punt-keepalive disable-kernel-core\n\
+      platform console serial\n!\nhostname csr1kv\n!\nboot-start-marker\nboot-end-marker\n\
+      !\n!\nno logging console\nenable secret 5 $1$LxYr$mtxQMjjb9pabQ60FQSlGz0\nenable\
+      \ password cisco\n!\nno aaa new-model\n!\n!\n!\n!\n!\n!\n!\nip domain name dna.lab\n\
+      !\n!\n!\n!\n!\n!\n!\n!\n!\n!\nsubscriber templating\n! \n! \n! \n! \n!\n!\n\
+      !\nmultilink bundle-name authenticated\n!\n!\n!\n!\n!\ncrypto pki trustpoint\
+      \ TP-self-signed-1121426817\n enrollment selfsigned\n subject-name cn=IOS-Self-Signed-Certificate-1121426817\n\
+      \ revocation-check none\n rsakeypair TP-self-signed-1121426817\n!\n!\ncrypto\
+      \ pki certificate chain TP-self-signed-1121426817\n certificate self-signed\
+      \ 01\n  30820330 30820218 A0030201 02020101 300D0609 2A864886 F70D0101 05050030\
+      \ \n  31312F30 2D060355 04031326 494F532D 53656C66 2D536967 6E65642D 43657274\
+      \ \n  69666963 6174652D 31313231 34323638 3137301E 170D3137 31323038 32303038\
+      \ \n  32335A17 0D323030 31303130 30303030 305A3031 312F302D 06035504 03132649\
+      \ \n  4F532D53 656C662D 5369676E 65642D43 65727469 66696361 74652D31 31323134\
+      \ \n  32363831 37308201 22300D06 092A8648 86F70D01 01010500 0382010F 00308201\
+      \ \n  0A028201 0100B5CA AF77778E 89DAF55A 21B1D4D3 58F37507 8A21EC2E DD1FB9CC\
+      \ \n  5C202BB3 C9858CD1 E5D448D3 01B3C97D 39811F1D D3A35F63 3CECF880 448D110A\
+      \ \n  77D7C1E1 A8814738 37C82DEE 8557BA5F 3EFF07E0 1305840E 625B3389 D8873A8F\
+      \ \n  E36AA76D A129A58D 0ADD6BED BE0A3C6C 181CA6DC 55A7AB55 C747FDE6 896D0D16\
+      \ \n  61F2E36E 1FAA7D57 AF3BA555 958C540E 4C726FB9 12A07CAF E326139C 0746F7B9\
+      \ \n  CBB01671 D2BD9D42 472B3D25 A31BEEC1 40EFADA5 34C077F2 13656748 99E4202C\
+      \ \n  36EE879D A874252B 451F469A 57D0C7A6 6BABBA23 95345543 42E03D5D 733549F1\
+      \ \n  38593348 B1B1B91F C4F1D344 B885C3BD 223FB6C7 6C095F89 5E5E751F 5E5CCA1E\
+      \ \n  35C05072 33030203 010001A3 53305130 0F060355 1D130101 FF040530 030101FF\
+      \ \n  301F0603 551D2304 18301680 141E3D65 B662C684 0038B17B C6A0284F E8F30E80\
+      \ \n  B9301D06 03551D0E 04160414 1E3D65B6 62C68400 38B17BC6 A0284FE8 F30E80B9\
+      \ \n  300D0609 2A864886 F70D0101 05050003 82010100 67E0BFC2 36D80510 38122406\
+      \ \n  33A4C068 541B7D92 0B965C40 39A4F76D A08D0E14 3684FC4D 91A22467 A3ACCE65\
+      \ \n  597C7FAE 289DCCF6 FAA59500 9BC74631 637E94D1 5448DF9F 5527110B 788214C0\
+      \ \n  AA4CB8B5 D0094F70 68BC5ED0 B6B0CF81 955EC1F8 C2F15615 2287CE7E 7441B968\
+      \ \n  41F0C5C3 721DF3AE A7B06A1D 961A8969 8EE5B501 547D6051 08241498 9C0DC287\
+      \ \n  0CA5B00E BE5F66B0 033624E9 5348FA5B D93B04FC 795F917E 8162CC50 90F3C6CD\
+      \ \n  65FDB13E 9283802E 6AA270D1 BA6203BA 256A3AAE A90DDDC8 D2CF5E37 2ED0A7AB\
+      \ \n  B37512AB EA0D65AB EBD9CA7E 949E9AAC 3C98E5F9 11DAF113 B1108CB7 B1C4E15C\
+      \ \n  F1CE1E2C 6AC11F02 D2E26288 5722CCC9 CB648CDF\n  \tquit\n!\n!\n!\n!\n!\n\
+      !\n!\n!\n!\nlicense udi pid CSR1000V sn 9WWNLO9YQ3B\ndiagnostic bootup level\
+      \ minimal\nspanning-tree extend system-id\n!\nnetconf-yang cisco-odm polling-enable\n\
+      netconf-yang\n!\nrestconf\n!\nusername vagrant privilege 15 password 0 vagrant\n\
+      !\nredundancy\n!\n!\n!\n!\n!\n!\n! \n!\n!\n!\n!\n!\n!\n!\n!\n!\n!\n!\n!\n! \n\
+      ! \n!\n!\ninterface GigabitEthernet1\n ip address dhcp\n negotiation auto\n\
+      \ no mop enabled\n no mop sysid\n!\ninterface GigabitEthernet2\n no ip address\n\
+      \ shutdown\n negotiation auto\n no mop enabled\n no mop sysid\n!\ninterface\
+      \ GigabitEthernet3\n no ip address\n shutdown\n negotiation auto\n no mop enabled\n\
+      \ no mop sysid\n!\n!\nvirtual-service csr_mgmt\n!\nip forward-protocol nd\n\
+      ip http server\nip http secure-server\nip http client source-interface GigabitEthernet1\n\
+      ip tftp source-interface GigabitEthernet1\n!\nip ssh pubkey-chain\n  username\
+      \ vagrant\n   key-hash ssh-rsa DD3BB82E850406E9ABFFA80AC0046ED6 \n!\n!\n!\n\
+      !\n!\ncontrol-plane\n!\n!\n!\n!\n!\n!\nline con 0\n stopbits 1\nline vty 0 4\n\
+      \ login local\n!\nwsma agent exec\n!\nwsma agent config\n!\nwsma agent filesys\n\
+      !\nwsma agent notify\n!\n!\nend"
+    rosetta_parsed_config:
+      openconfig-interfaces:interfaces:
+        interface:
+        - config:
+            enabled: true
+            name: GigabitEthernet1
+            type: iana-if-type:ethernetCsmacd
+          name: GigabitEthernet1
+        - config:
+            enabled: false
+            name: GigabitEthernet2
+            type: iana-if-type:ethernetCsmacd
+          name: GigabitEthernet2
+        - config:
+            enabled: false
+            name: GigabitEthernet3
+            type: iana-if-type:ethernetCsmacd
+          name: GigabitEthernet3
+      openconfig-network-instance:network-instances:
+        network-instance:
+        - config:
+            name: default
+          name: default
   groups:
   - ios
   hostname: 127.0.0.1
@@ -10,8 +84,31 @@ csr1kv:
 eos_device:
   data:
     backup_command: show run all
-    native_config: ''
-    rosetta_parsed_config: ''
+    native_config: "! Command: show running-config\n! device: localhost (vEOS, EOS-4.20.1F)\n\
+      !\n! boot system flash:/vEOS-lab.swi\n!\nevent-handler dhclient\n   trigger\
+      \ on-boot\n   action bash sudo /mnt/flash/initialize_ma1.sh\n!\ntransceiver\
+      \ qsfp default-mode 4x10G\n!\nspanning-tree mode mstp\n!\naaa authorization\
+      \ exec default local\n!\naaa root secret sha512 $6$c4Afx9gi3Vomn3MJ$oTyx9V.4j9BKouR2szQA7IA7qLRMKoqOMeIr0RFjx0TLmESI5pmIb2MgBC//OymzhKkTxtOa4Htdg7YdTTAqc.\n\
+      !\nusername admin privilege 15 role network-admin secret sha512 $6$d0ipetfKSIlGjMfw$CfYqGlcN5cwi1GJgPGyrTEzjA8tPC8XrDMjf8WBwc8SmyaQM25x5YCrCvPz8OOxqwVS4zAMUs6ICiKcVk3OBc0\n\
+      username vagrant privilege 15 role network-admin secret sha512 $6$WIAumVmhEeJeBvic$OBvvyHS.JUZF5Zvv6fRaZpPOUyCWGJykRHvnrssiTGTeCIt5zNwL2j9cda.OU.TAB3INTMeA2DUBOULu.O2Mr.\n\
+      !\ninterface Ethernet1\n!\ninterface Ethernet2\n!\ninterface Management1\n \
+      \  ip address 10.0.2.15/24\n!\nno ip routing\n!\nmanagement api http-commands\n\
+      \   no shutdown\n!\nend\n"
+    rosetta_parsed_config: "{\n    \"openconfig-interfaces:interfaces\": {\n     \
+      \   \"interface\": [\n            {\n                \"name\": \"Ethernet1\"\
+      ,\n                \"config\": {\n                    \"name\": \"Ethernet1\"\
+      ,\n                    \"type\": \"iana-if-type:ethernetCsmacd\",\n        \
+      \            \"enabled\": true\n                }\n            },\n        \
+      \    {\n                \"name\": \"Ethernet2\",\n                \"config\"\
+      : {\n                    \"name\": \"Ethernet2\",\n                    \"type\"\
+      : \"iana-if-type:ethernetCsmacd\",\n                    \"enabled\": true\n\
+      \                }\n            },\n            {\n                \"name\"\
+      : \"Management1\",\n                \"config\": {\n                    \"name\"\
+      : \"Management1\",\n                    \"enabled\": true\n                }\n\
+      \            }\n        ]\n    },\n    \"openconfig-network-instance:network-instances\"\
+      : {\n        \"network-instance\": [\n            {\n                \"name\"\
+      : \"default\",\n                \"config\": {\n                    \"name\"\
+      : \"default\"\n                }\n            }\n        ]\n    }\n}"
   groups:
   - eos
   hostname: 127.0.0.1
@@ -114,12 +211,10 @@ junos_device:
       \                    </family>\n                </forwarding-options>\n    \
       \        </security>\n    </configuration>\n    <cli>\n        <banner></banner>\n\
       \    </cli>\n</rpc-reply>\n"
-    rosetta_parsed_config:
-      openconfig-network-instance:network-instances:
-        network-instance:
-        - config:
-            name: default
-          name: default
+    rosetta_parsed_config: "{\n    \"openconfig-network-instance:network-instances\"\
+      : {\n        \"network-instance\": [\n            {\n                \"name\"\
+      : \"default\",\n                \"config\": {\n                    \"name\"\
+      : \"default\"\n                }\n            }\n        ]\n    }\n}"
   groups:
   - junos
   hostname: 127.0.0.1
