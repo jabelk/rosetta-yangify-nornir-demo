@@ -30,7 +30,7 @@ jupyter-console==6.0.0
 jupyter-core==4.5.0
 lxml==4.3.4
 MarkupSafe==1.1.1
-mistune==0.8.4
+mistune==2.0.3
 mypy-extensions==0.4.1
 napalm==2.4.0
 nbconvert==5.5.0
